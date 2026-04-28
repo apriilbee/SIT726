@@ -901,26 +901,88 @@
     padding: 100px 0;
   }
   .how-inner { padding: 0 80px; }
-  .how-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 80px; gap: 60px; }
+  .how-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 80px; gap: 60px; }
+  .how-head .section-title { margin-bottom: 0; }
   .how-steps {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 40px;
     position: relative;
+    padding-top: 48px;
+  }
+  /* Curvy SVG connector between badges */
+  .how-connector {
+    position: absolute;
+    top: 8px; /* badge centre (48px) minus half SVG height (40px) */
+    left: 0;
+    width: 100%;
+    height: 80px;
+    z-index: 0;
+    pointer-events: none;
+    overflow: visible;
   }
   .step {
     position: relative;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 24px;
+    padding: 44px 28px 32px;
+    z-index: 1;
+    transition: transform .3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow .3s ease;
+  }
+  .step:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px -8px rgba(91, 46, 204, 0.15);
+  }
+  /* Circular icon badge — floats above the card, centred on its top edge */
+  .step-badge {
+    position: absolute;
+    top: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--pink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    color: var(--white);
+    box-shadow:
+      0 6px 20px rgba(233, 30, 140, 0.45),
+      0 0 0 5px rgba(233, 30, 140, 0.12),
+      0 0 0 10px var(--purple-soft);
+    z-index: 2;
+    transition: transform .35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .step:hover .step-badge {
+    transform: translateX(-50%) scale(1.12);
+  }
+  .step:nth-child(2) .step-badge {
+    background: var(--purple);
+    box-shadow:
+      0 6px 20px rgba(91, 46, 204, 0.45),
+      0 0 0 5px rgba(91, 46, 204, 0.12),
+      0 0 0 10px var(--purple-soft);
+  }
+  .step:nth-child(3) .step-badge {
+    background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 100%);
+    box-shadow:
+      0 6px 20px rgba(91, 46, 204, 0.4),
+      0 0 0 5px rgba(91, 46, 204, 0.1),
+      0 0 0 10px var(--purple-soft);
   }
   .step-num {
     font-family: var(--font-serif);
     font-style: italic;
     font-weight: 400;
-    font-size: 80px;
+    font-size: 13px;
     line-height: 1;
     color: var(--pink);
-    margin-bottom: 24px;
-    letter-spacing: -0.04em;
+    margin-bottom: 10px;
+    letter-spacing: 0.06em;
+    display: block;
   }
+  .step:nth-child(2) .step-num { color: var(--purple); }
+  .step:nth-child(3) .step-num { color: var(--purple); }
   .step h3 {
     font-family: var(--font-display);
     font-size: 26px;
@@ -934,14 +996,10 @@
     line-height: 1.6;
     color: var(--ink-soft);
   }
-  .step-arrow {
-    position: absolute;
-    top: 30px;
-    right: -30px;
-    color: var(--pink);
-    opacity: 0.5;
+  @media (prefers-reduced-motion: reduce) {
+    .step { transition: none !important; }
+    .step-badge { transition: none !important; }
   }
-  .step:last-child .step-arrow { display: none; }
 
   /* ============================================
      TESTIMONIALS / SOCIAL PROOF
@@ -1080,33 +1138,95 @@
     margin: 0 32px 32px;
     background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 60%, #2A0F6E 100%);
     border-radius: 48px;
-    padding: 120px 80px;
+    padding: 80px 80px;
     color: var(--white);
     position: relative;
     overflow: hidden;
   }
+  /* Blobs now sit behind the LEFT (text) column for atmosphere */
   .final-cta::before {
     content: '';
     position: absolute;
-    top: -200px; right: -200px;
-    width: 600px; height: 600px;
+    top: -140px; left: -120px;
+    width: 520px; height: 520px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(233, 30, 140, 0.5), transparent 60%);
+    background: radial-gradient(circle, rgba(233, 30, 140, 0.45), transparent 60%);
     pointer-events: none;
   }
   .final-cta::after {
     content: '';
     position: absolute;
-    bottom: -150px; left: -100px;
+    bottom: -140px; left: -80px;
     width: 400px; height: 400px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 100, 200, 0.25), transparent 60%);
+    background: radial-gradient(circle, rgba(255, 100, 200, 0.22), transparent 60%);
     pointer-events: none;
   }
-  .final-cta-inner {
-    max-width: 720px;
+  /* Two-column: text left, photo collage right */
+  .final-cta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
     position: relative;
     z-index: 1;
+  }
+  .final-cta-inner {
+    position: relative;
+    z-index: 1;
+  }
+  /* Right: single full-bleed photo panel (inspired by editorial CTA layout) */
+  .final-cta-visual {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    align-self: stretch;
+    min-height: 420px;
+  }
+  /* Full-bleed photo fills the panel */
+  .cta-photo-main {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=900&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center top;
+  }
+  /* Left-edge gradient blends the photo into the card's purple background */
+  .cta-photo-main::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(95deg, rgba(42, 15, 110, 0.38) 0%, transparent 38%);
+  }
+  /* Bottom gradient darkens for chip legibility */
+  .cta-photo-main::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(26, 16, 51, 0.58) 0%, transparent 48%);
+  }
+  /* Floating info chips overlaid on the image */
+  .cta-chip {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--ink);
+    padding: 10px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    z-index: 4;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .cta-chip-1 { top: 20px; left: 20px; }
+  .cta-chip-2 { bottom: 20px; right: 20px; }
+  .cta-chip .pulse-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--pink);
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
   }
   .final-cta h2 {
     font-family: var(--font-display);
@@ -1535,26 +1655,40 @@
       </div>
 
       <div class="how-steps">
+        <!-- Curvy dashed connectors between the three step badges -->
+        <svg class="how-connector" viewBox="0 0 1000 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <marker id="how-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+              <path d="M 1 1 L 8 5 L 1 9" stroke="#E91E8C" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
+            </marker>
+          </defs>
+          <!-- Badge 1 → Badge 2: S-curve dipping below then arcing up -->
+          <path d="M 155 40 Q 225 6, 310 46 Q 395 84, 500 40"
+                stroke="#E91E8C" stroke-width="2.5" fill="none"
+                stroke-dasharray="6 8" stroke-linecap="round"
+                opacity="0.38" marker-end="url(#how-arrow)"/>
+          <!-- Badge 2 → Badge 3: S-curve arcing up then dipping below -->
+          <path d="M 500 40 Q 608 4, 692 44 Q 778 82, 845 40"
+                stroke="#E91E8C" stroke-width="2.5" fill="none"
+                stroke-dasharray="6 8" stroke-linecap="round"
+                opacity="0.38" marker-end="url(#how-arrow)"/>
+        </svg>
+
         <div class="step">
-          <div class="step-num">01</div>
+          <div class="step-badge"><i class="fi fi-rr-graduation-cap"></i></div>
+          <span class="step-num">01 · Sign up</span>
           <h3>Sign up with your<br>uni email</h3>
           <p>Verified in seconds. Younite is student-only — every member is a real student at a real Australian university.</p>
-          <svg class="step-arrow" width="60" height="40" viewBox="0 0 60 40" fill="none">
-            <path d="M5 20 Q 30 5 55 20" stroke="#E91E8C" stroke-width="2" stroke-dasharray="4 4" fill="none"/>
-            <path d="M50 15 L55 20 L50 25" stroke="#E91E8C" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
         </div>
         <div class="step">
-          <div class="step-num">02</div>
+          <div class="step-badge"><i class="fi fi-rr-user-pen"></i></div>
+          <span class="step-num">02 · Your profile</span>
           <h3>Tell us about<br>yourself</h3>
           <p>Country, languages, interests, what you study. The more you share, the better your matches.</p>
-          <svg class="step-arrow" width="60" height="40" viewBox="0 0 60 40" fill="none">
-            <path d="M5 20 Q 30 35 55 20" stroke="#E91E8C" stroke-width="2" stroke-dasharray="4 4" fill="none"/>
-            <path d="M50 15 L55 20 L50 25" stroke="#E91E8C" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
         </div>
         <div class="step">
-          <div class="step-num">03</div>
+          <div class="step-badge"><i class="fi fi-rr-users"></i></div>
+          <span class="step-num">03 · Connect</span>
           <h3>Match, chat,<br>meet up</h3>
           <p>Connect 1-on-1, join group events, or host your own. Friendships start in the app and continue in real life.</p>
         </div>
@@ -1626,19 +1760,35 @@
 <!-- ===== FINAL CTA ===== -->
 <section id="signup">
   <div class="final-cta">
-    <div class="final-cta-inner">
-      <span class="section-eyebrow" style="color: #FFA8D6;">Be the first</span>
-      <h2>Be the first to <em>connect</em><br>when we launch.</h2>
-      <p>We're launching at three Melbourne universities first, then rolling out across Australia. Get on the waitlist and you'll be among the first 1,000 to join — free forever.</p>
-      <form class="signup-form" onsubmit="event.preventDefault();">
-        <input type="email" placeholder="your.name@university.edu.au" required>
-        <button type="submit" class="btn btn-primary">Get early access <span class="btn-arrow">→</span></button>
-      </form>
-      <div class="final-cta-foot">
-        <span><i class="fi fi-rr-check"></i> Free to join</span>
-        <span><i class="fi fi-rr-check"></i> Built by students, for students</span>
-        <span><i class="fi fi-rr-check"></i> Made in Melbourne</span>
+    <div class="final-cta-grid">
+
+      <!-- Left: text content -->
+      <div class="final-cta-inner">
+        <span class="section-eyebrow" style="color: #FFA8D6;">Be the first</span>
+        <h2>Be the first to <em>connect</em><br>when we launch.</h2>
+        <p>We're launching at three Melbourne universities first, then rolling out across Australia. Get on the waitlist and you'll be among the first 1,000 to join — free forever.</p>
+        <form class="signup-form" onsubmit="event.preventDefault();">
+          <input type="email" placeholder="your.name@university.edu.au" required>
+          <button type="submit" class="btn btn-primary">Get early access <span class="btn-arrow">→</span></button>
+        </form>
+        <div class="final-cta-foot">
+          <span><i class="fi fi-rr-check"></i> Free to join</span>
+          <span><i class="fi fi-rr-check"></i> Built by students, for students</span>
+          <span><i class="fi fi-rr-check"></i> Made in Melbourne</span>
+        </div>
       </div>
+
+      <!-- Right: full-bleed photo panel -->
+      <div class="final-cta-visual">
+        <div class="cta-photo-main"></div>
+        <div class="cta-chip cta-chip-1">
+          <span class="pulse-dot"></span> 2,400+ on the waitlist
+        </div>
+        <div class="cta-chip cta-chip-2">
+          <i class="fi fi-sr-heart" style="color: var(--pink); font-size: 12px;"></i> Friendships found daily
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -1649,7 +1799,7 @@
     <div class="footer-grid">
       <div class="footer-brand-col">
         <img src="younite-logo.png" alt="Younite" class="logo">
-        <p>The community platform for international students in Australia. Built with care by Team CRTL+PASS.</p>
+        <p>The community platform for international students in Australia. Built with care by Team CTRL+PASS.</p>
         <div class="footer-socials">
           <a href="#" aria-label="Instagram"><i class="fi fi-brands-instagram"></i></a>
           <a href="#" aria-label="TikTok"><i class="fi fi-brands-tik-tok"></i></a>
@@ -1694,7 +1844,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Younite · Team CRTL+PASS · Deakin University SIT726</span>
+      <span>© 2026 Younite · Team CTRL+PASS · Deakin University SIT726</span>
       <span class="made">Made with <i class="fi fi-sr-heart"></i> in Melbourne</span>
     </div>
   </div>
