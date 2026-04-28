@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440, initial-scale=1.0">
+<title>Younite — Find your people. Feel at home.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Flaticon UIcons (regular-rounded set) -->
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css">
+<style>
+  /* ============================================
+     YOUNITE LANDING PAGE
+     Design tokens & global styles
+     ============================================ */
+  :root {
+    /* Brand colors */
+    --purple:        #5B2ECC;
+    --purple-deep:   #3A1A8C;
+    --purple-soft:   #F2EBFF;
+    --pink:          #E91E8C;
+    --pink-soft:     #FFE5F2;
+    --cream:         #FFF8F3;
+    --cream-deep:    #FBEEDD;
+    --ink:           #1A1033;
+    --ink-soft:      #4A3F60;
+    --line:          #E8DFD3;
+    --white:         #FFFFFF;
+
+    /* Typography */
+    --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-serif:   'Fraunces', Georgia, serif;
+
+    /* Spacing scale */
+    --container: 1280px;
+    --gutter: 32px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Note: overflow-x:hidden is applied per-section (e.g. .hero) rather than on body
+     because body-level overflow-x:hidden breaks position:sticky elsewhere on the page. */
+
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  /* Flaticon UIcons baseline */
+  i[class^="fi-"], i[class*=" fi-"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  i[class^="fi-"]::before, i[class*=" fi-"]::before {
+    display: inline-block;
+    line-height: 1;
+  }
+
+  .container {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  /* ============================================
+     SCROLL EXPERIENCE
+     - Smooth anchor jumps via CSS smooth-scroll
+     - Reveal-on-scroll defaults (.reveal class)
+     - Respects prefers-reduced-motion automatically
+     ============================================ */
+
+  /* Native smooth-scroll for anchor links (#features, #how, etc.).
+     Lenis below also handles scroll smoothness for wheel/trackpad. */
+  html { scroll-behavior: smooth; }
+  /* When Lenis is active, it adds the .lenis class and handles scroll itself —
+     we disable native smooth-scroll there to avoid conflicts. */
+  html.lenis { scroll-behavior: auto; }
+  html.lenis body { overflow: clip; }
+  html.lenis .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  html.lenis .lenis.lenis-stopped { overflow: clip; }
+
+  /* Reveal-on-scroll: subtle 24px rise + fade, 700ms ease-out cubic.
+     Elements start hidden and tagged .reveal; the IO adds .is-visible. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Stagger helpers — applied via inline style or modifier class.
+     Each child .reveal gets a transition-delay based on its position. */
+  .reveal-stagger > .reveal { transition-delay: 0ms; }
+  .reveal-stagger > .reveal:nth-child(1) { transition-delay: 0ms; }
+  .reveal-stagger > .reveal:nth-child(2) { transition-delay: 80ms; }
+  .reveal-stagger > .reveal:nth-child(3) { transition-delay: 160ms; }
+  .reveal-stagger > .reveal:nth-child(4) { transition-delay: 240ms; }
+  .reveal-stagger > .reveal:nth-child(5) { transition-delay: 320ms; }
+
+  /* Honour reduced-motion: instant reveal, no Lenis (handled in JS too). */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ============================================
+     Reusable: Pink arrow motif (the logo's
+     connection element, used as a graphic accent)
+     ============================================ */
+  .arrow-motif {
+    display: inline-block;
+    width: 64px; height: 24px;
+    position: relative;
+  }
+  .arrow-motif svg { width: 100%; height: 100%; }
+
+  /* ============================================
+     Reusable: Buttons
+     ============================================ */
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 16px 28px;
+    border-radius: 100px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: transform .2s ease, box-shadow .2s ease;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--pink);
+    color: var(--white);
+    box-shadow: 0 4px 0 var(--purple-deep);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--purple-deep); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 2px solid var(--ink);
+  }
+  .btn-ghost:hover { background: var(--ink); color: var(--cream); }
+  .btn-purple {
+    background: var(--purple);
+    color: var(--white);
+    box-shadow: 0 4px 0 var(--purple-deep);
+  }
+  .btn-purple:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--purple-deep); }
+  .btn-arrow { font-size: 18px; transition: transform .2s; }
+  .btn:hover .btn-arrow { transform: translateX(4px); }
+
+  /* ============================================
+     NAVIGATION
+     ============================================ */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255, 248, 243, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 0;
+  }
+  .logo {
+    height: 38px;
+    width: auto;
+  }
+  .nav-links {
+    display: flex; gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-weight: 500;
+    color: var(--ink);
+    font-size: 15px;
+    position: relative;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--pink); }
+  .nav-cta {
+    display: flex; gap: 16px; align-items: center;
+  }
+  .nav-cta a.login {
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .nav-cta .btn { padding: 12px 22px; font-size: 15px; }
+
+  /* ============================================
+     HERO SECTION
+     ============================================ */
+  .hero {
+    position: relative;
+    padding: 80px 0 120px;
+    overflow: hidden;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 16px;
+    background: var(--purple-soft);
+    color: var(--purple);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-bottom: 28px;
+  }
+  .hero-eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--pink);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .6; transform: scale(1.3); }
+  }
+
+  h1.hero-headline {
+    font-family: var(--font-display);
+    font-size: 88px;
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 32px;
+  }
+  h1.hero-headline .accent {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--pink);
+    position: relative;
+  }
+  h1.hero-headline .accent::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    bottom: -2px;
+    height: 6px;
+    background: var(--pink);
+    opacity: 0.18;
+    border-radius: 4px;
+  }
+  .hero-sub {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin-bottom: 40px;
+    max-width: 540px;
+  }
+  .hero-cta-row {
+    display: flex; gap: 16px; align-items: center;
+    margin-bottom: 36px;
+  }
+  .hero-trust {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .hero-trust-avatars {
+    display: flex;
+  }
+  .hero-trust-avatars .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--cream);
+    margin-left: -8px;
+    background-size: cover;
+    background-position: center;
+  }
+  .hero-trust-avatars .avatar:first-child { margin-left: 0; }
+  .avatar-1 { background: linear-gradient(135deg, #FFB088, #FF7F50); }
+  .avatar-2 { background: linear-gradient(135deg, #88B0FF, #5070D0); }
+  .avatar-3 { background: linear-gradient(135deg, #FFC8E0, #E91E8C); }
+  .avatar-4 { background: linear-gradient(135deg, #B088FF, #5B2ECC); }
+
+  /* HERO COLLAGE: asymmetric overlapping photos */
+  .hero-visual {
+    position: relative;
+    height: 600px;
+  }
+  .photo {
+    position: absolute;
+    border-radius: 24px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 30px 60px -20px rgba(26, 16, 51, 0.3);
+    overflow: hidden;
+  }
+  .photo::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.15));
+  }
+  /* Photo 1 — primary, students laughing */
+  .photo-1 {
+    width: 320px; height: 420px;
+    top: 0; right: 80px;
+    background:
+      url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop') center/cover,
+      linear-gradient(135deg, #FFB088 0%, #E91E8C 50%, #5B2ECC 100%);
+    transform: rotate(-3deg);
+    z-index: 2;
+  }
+  .photo-2 {
+    width: 240px; height: 280px;
+    bottom: 40px; right: 0;
+    background:
+      url('https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&auto=format&fit=crop') center/cover,
+      linear-gradient(135deg, #5B2ECC 0%, #3A1A8C 100%);
+    transform: rotate(4deg);
+    z-index: 3;
+  }
+  .photo-3 {
+    width: 220px; height: 260px;
+    bottom: 80px; left: 0;
+    background:
+      url('https://images.unsplash.com/photo-1543269865-cbf427effbad?w=600&auto=format&fit=crop') center/cover,
+      linear-gradient(135deg, #FFC8E0 0%, #E91E8C 60%, #5B2ECC 100%);
+    transform: rotate(-5deg);
+    z-index: 1;
+  }
+  /* Decorative inner pattern shown when image fails to load */
+  .photo-inner {
+    position: absolute; inset: 0;
+    display: flex; align-items: flex-end;
+    padding: 24px;
+    z-index: 1;
+  }
+  .photo-inner-label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: rgba(255,255,255,0.95);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.2);
+    padding: 6px 12px;
+    border-radius: 100px;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .photo-inner-label i { font-size: 14px; }
+
+  /* Floating chip pills on hero */
+  .hero-chip {
+    position: absolute;
+    background: var(--white);
+    padding: 12px 18px;
+    border-radius: 100px;
+    box-shadow: 0 12px 32px -8px rgba(26, 16, 51, 0.18);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 4;
+  }
+  .hero-chip .icon {
+    font-size: 18px;
+    color: var(--pink);
+    width: 22px; height: 22px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .chip-1 { top: 70px; left: -10px; }
+  .chip-2 { bottom: 0; right: 60px; }
+  .chip-3 { top: 280px; right: -20px; }
+
+  /* Big pink swoosh behind hero photos */
+  .hero-swoosh {
+    position: absolute;
+    width: 700px; height: 700px;
+    top: -100px; right: -200px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+
+  /* ============================================
+     STAT STORY (full-width carousel: dark band spans page)
+     ============================================ */
+  .stat-story {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Atmospheric blobs across the full-width band */
+  .stat-story::before {
+    content: '';
+    position: absolute;
+    top: 10%; left: -150px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(233, 30, 140, 0.18), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .stat-story::after {
+    content: '';
+    position: absolute;
+    bottom: 10%; right: -150px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(91, 46, 204, 0.35), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .stat-carousel {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Viewport: full-width band, fixed visual height */
+  .stat-viewport {
+    width: 100%;
+    height: 520px;       /* generous breathing room for full-width content */
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Rail: holds 3 slides side-by-side, slides via translateX */
+  .stat-rail {
+    display: flex;
+    width: 300%;          /* 3 × 100vw */
+    height: 100%;
+    transition: transform 600ms cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: transform;
+  }
+  .stat-carousel[data-active="0"] .stat-rail { transform: translateX(0); }
+  .stat-carousel[data-active="1"] .stat-rail { transform: translateX(-33.3333%); }
+  .stat-carousel[data-active="2"] .stat-rail { transform: translateX(-66.6666%); }
+
+  /* Each slide is exactly one viewport wide */
+  .stat-slide {
+    flex: 0 0 33.3333%;
+    width: 33.3333%;
+    height: 100%;
+    padding: 80px 120px 80px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  /* Chapter label at top of each slide */
+  .stat-chapter {
+    position: absolute;
+    top: 32px; left: 120px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--pink);
+  }
+
+  /* SLIDE 1 — Intro (centered) */
+  .stat-slide-intro {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .stat-slide-title {
+    font-family: var(--font-display);
+    font-size: 72px;
+    line-height: 1.0;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 28px;
+  }
+  .stat-slide-title em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--pink);
+  }
+  .stat-slide-sub {
+    font-size: 19px;
+    line-height: 1.55;
+    color: rgba(255, 248, 243, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .stat-slide-sub em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--cream);
+  }
+
+  /* SLIDE 2 — 3-column stats grid spanning the full slide width */
+  .stat-slide-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 0;
+    align-items: start;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .stat-col {
+    padding: 0 40px;
+    text-align: left;
+  }
+  .stat-col-divider {
+    width: 1px;
+    align-self: stretch;
+    background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(255, 248, 243, 0.25) 25%,
+      rgba(255, 248, 243, 0.25) 75%,
+      transparent 100%);
+  }
+  .stat-col-num {
+    font-family: var(--font-display);
+    font-size: 120px;
+    line-height: 0.9;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    color: var(--pink);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: baseline;
+  }
+  .stat-col-num .num-suffix {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 60px;
+    color: var(--cream);
+    margin-left: 6px;
+  }
+  .stat-col-headline {
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: var(--cream);
+    margin-bottom: 16px;
+  }
+  .stat-col-headline em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--pink);
+  }
+  .stat-col-source {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: rgba(255, 248, 243, 0.45);
+    line-height: 1.5;
+  }
+
+  /* SLIDE 3 — Outro */
+  .stat-slide-outro {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .outro-arc {
+    width: 220px;
+    height: 70px;
+    margin: 0 auto 24px;
+    display: block;
+  }
+  .stat-slide-outro-title {
+    font-family: var(--font-display);
+    font-size: 48px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+  }
+  .stat-slide-outro-title em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--pink);
+  }
+  .stat-slide-outro-sub {
+    font-size: 18px;
+    line-height: 1.6;
+    color: rgba(255, 248, 243, 0.7);
+  }
+
+  /* Arrow controls — sit INSIDE the dark band, on left/right edges, vertically centered */
+  .stat-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255, 248, 243, 0.08);
+    color: var(--cream);
+    border: 1px solid rgba(255, 248, 243, 0.18);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: transform .2s ease, background .2s ease, border-color .2s ease, opacity .2s ease;
+    z-index: 5;
+  }
+  .stat-arrow:hover {
+    background: var(--pink);
+    border-color: var(--pink);
+    transform: translateY(-50%) scale(1.08);
+  }
+  .stat-arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  .stat-arrow:disabled:hover {
+    background: rgba(255, 248, 243, 0.08);
+    border-color: rgba(255, 248, 243, 0.18);
+    transform: translateY(-50%);
+  }
+  .stat-arrow-prev { left: 40px; }
+  .stat-arrow-next { right: 40px; }
+
+  /* Dots — sit INSIDE the dark band, centered along the bottom */
+  .stat-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 0 48px;
+    position: relative;
+    z-index: 1;
+  }
+  .stat-dot {
+    width: 36px;
+    height: 6px;
+    border-radius: 100px;
+    background: rgba(255, 248, 243, 0.15);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background .25s ease, width .25s ease;
+  }
+  .stat-dot.is-active {
+    background: var(--pink);
+    width: 52px;
+  }
+  .stat-dot:hover:not(.is-active) {
+    background: rgba(255, 248, 243, 0.35);
+  }
+
+  /* Mobile: smaller spacing and font sizes */
+  @media (max-width: 800px) {
+    .stat-viewport { height: auto; min-height: 480px; }
+    .stat-slide { padding: 80px 24px 60px; }
+    .stat-chapter { left: 24px; top: 24px; }
+    .stat-slide-title { font-size: 44px; }
+    .stat-slide-outro-title { font-size: 32px; }
+    .stat-slide-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .stat-col-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right,
+        transparent, rgba(255, 248, 243, 0.18), transparent);
+    }
+    .stat-col-num { font-size: 80px; }
+    .stat-col-num .num-suffix { font-size: 40px; }
+    .stat-col { padding: 0 8px; }
+    .stat-arrow { width: 40px; height: 40px; }
+    .stat-arrow-prev { left: 12px; }
+    .stat-arrow-next { right: 12px; }
+  }
+
+  /* Reduced motion: keep carousel but disable transition */
+  @media (prefers-reduced-motion: reduce) {
+    .stat-rail { transition: none; }
+  }
+
+  /* ============================================
+     SECTION HEADERS (shared)
+     ============================================ */
+  section.padded { padding: 120px 0; }
+  .section-eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 56px;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 20px;
+    max-width: 800px;
+  }
+  .section-title em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--pink);
+  }
+  .section-sub {
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 620px;
+  }
+
+  /* ============================================
+     BENEFITS SECTION
+     ============================================ */
+  .benefits-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 60px;
+    align-items: end;
+    margin-bottom: 60px;
+  }
+  .benefits-head-meta {
+    text-align: right;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .benefits-head-meta strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  /* Asymmetric grid: 2 large + 2 medium */
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 24px;
+  }
+  .benefit {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .benefit:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -12px rgba(26, 16, 51, 0.15);
+  }
+  .benefit-icon {
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    font-size: 30px;
+    color: var(--purple);
+  }
+  .benefit-1 .benefit-icon { color: var(--white); }
+  .benefit-1 {
+    grid-column: 1 / 2; grid-row: 1 / 2;
+    min-height: 380px;
+    background: var(--purple);
+    color: var(--white);
+    padding-right: 240px; /* leave space for the embedded mockup */
+  }
+  .benefit-1 .benefit-icon { background: rgba(255,255,255,0.2); }
+  .benefit-2 { grid-column: 2 / 3; grid-row: 1 / 2; min-height: 380px; }
+  .benefit-2 .benefit-icon { background: var(--pink-soft); }
+  .benefit-3 { grid-column: 1 / 2; grid-row: 2 / 3; min-height: 320px; }
+  .benefit-3 .benefit-icon { background: var(--purple-soft); }
+  .benefit-4 { grid-column: 2 / 3; grid-row: 2 / 3; min-height: 320px; background: var(--cream-deep); }
+  .benefit-4 .benefit-icon { background: var(--white); }
+
+  .benefit h3 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 14px;
+  }
+  .benefit p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+  }
+  .benefit-1 p { color: rgba(255, 248, 243, 0.85); }
+  .benefit-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pink);
+  }
+  .benefit-1 .benefit-tag { color: var(--pink-soft); }
+  .benefit-decoration {
+    position: absolute;
+    bottom: -40px; right: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(233, 30, 140, 0.08);
+    pointer-events: none;
+  }
+  .benefit-1 .benefit-decoration { background: rgba(233, 30, 140, 0.4); }
+
+  /* Mock UI inside featured benefit card */
+  .benefit-mockup {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 24px;
+    width: 200px;
+    background: var(--white);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 20px 40px -12px rgba(0,0,0,0.3);
+    color: var(--ink);
+  }
+  .benefit-mockup .row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+  }
+  .benefit-mockup .row:last-child { border-bottom: none; }
+  .benefit-mockup .row .ava {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .benefit-mockup .row strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .benefit-mockup .row span {
+    font-size: 10px;
+    color: var(--ink-soft);
+  }
+  .benefit-mockup .match-pct {
+    margin-left: auto;
+    background: var(--pink-soft);
+    color: var(--pink);
+    padding: 3px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* ============================================
+     HOW IT WORKS
+     ============================================ */
+  .how {
+    background: var(--purple-soft);
+    border-radius: 48px;
+    margin: 0 32px;
+    padding: 100px 0;
+  }
+  .how-inner { padding: 0 80px; }
+  .how-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 80px; gap: 60px; }
+  .how-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    position: relative;
+  }
+  .step {
+    position: relative;
+  }
+  .step-num {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 1;
+    color: var(--pink);
+    margin-bottom: 24px;
+    letter-spacing: -0.04em;
+  }
+  .step h3 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    line-height: 1.2;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: -0.015em;
+  }
+  .step p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .step-arrow {
+    position: absolute;
+    top: 30px;
+    right: -30px;
+    color: var(--pink);
+    opacity: 0.5;
+  }
+  .step:last-child .step-arrow { display: none; }
+
+  /* ============================================
+     TESTIMONIALS / SOCIAL PROOF
+     ============================================ */
+  .testimonials-head {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+  .testimonials-head .section-title {
+    margin: 0 auto 20px;
+  }
+  .testimonials-head .section-sub {
+    margin: 0 auto;
+  }
+  .testimonials {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .testimonial {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    padding: 36px;
+    position: relative;
+  }
+  .testimonial:nth-child(2) {
+    background: var(--ink);
+    color: var(--cream);
+    border-color: var(--ink);
+    transform: translateY(-20px);
+  }
+  .testimonial:nth-child(2) .testimonial-text { color: var(--cream); }
+  .testimonial:nth-child(2) .testimonial-meta strong { color: var(--cream); }
+  .testimonial:nth-child(2) .testimonial-meta span { color: rgba(255, 248, 243, 0.6); }
+  .testimonial-quote {
+    font-family: var(--font-serif);
+    font-size: 60px;
+    line-height: 1;
+    color: var(--pink);
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+  .testimonial-text {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin-bottom: 32px;
+  }
+  .testimonial-meta {
+    display: flex; align-items: center; gap: 14px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .testimonial:nth-child(2) .testimonial-meta { border-top-color: rgba(255,248,243,0.15); }
+  .testimonial-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+  }
+  .testimonial-meta strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .testimonial-meta span {
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  /* Logo bar */
+  .logo-bar {
+    margin-top: 100px;
+    padding: 40px 60px;
+    background: var(--cream-deep);
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+  .logo-bar-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+  .logo-bar-items {
+    display: flex; gap: 48px; align-items: center;
+    flex-wrap: wrap;
+  }
+  .logo-placeholder {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--ink);
+    opacity: 0.55;
+    letter-spacing: -0.01em;
+  }
+
+  /* ============================================
+     FINAL CTA
+     ============================================ */
+  .final-cta {
+    margin: 0 32px 32px;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 60%, #2A0F6E 100%);
+    border-radius: 48px;
+    padding: 120px 80px;
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(233, 30, 140, 0.5), transparent 60%);
+    pointer-events: none;
+  }
+  .final-cta::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; left: -100px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 100, 200, 0.25), transparent 60%);
+    pointer-events: none;
+  }
+  .final-cta-inner {
+    max-width: 720px;
+    position: relative;
+    z-index: 1;
+  }
+  .final-cta h2 {
+    font-family: var(--font-display);
+    font-size: 72px;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+    margin-bottom: 24px;
+  }
+  .final-cta h2 em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: #FFA8D6;
+  }
+  .final-cta p {
+    font-size: 19px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 40px;
+    max-width: 540px;
+  }
+  .signup-form {
+    display: flex; gap: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 100px;
+    padding: 8px 8px 8px 24px;
+    max-width: 540px;
+    backdrop-filter: blur(8px);
+  }
+  .signup-form input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--white);
+    font-size: 16px;
+    font-family: var(--font-body);
+  }
+  .signup-form input::placeholder { color: rgba(255, 255, 255, 0.5); }
+  .signup-form .btn { padding: 14px 28px; font-size: 15px; }
+  .final-cta-foot {
+    margin-top: 24px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex; gap: 24px;
+  }
+  .final-cta-foot span { display: flex; align-items: center; gap: 8px; }
+  .final-cta-foot i { color: #FFA8D6; font-size: 14px; }
+
+  /* ============================================
+     FOOTER
+     ============================================ */
+  footer {
+    padding: 80px 0 40px;
+    background: var(--cream);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+  }
+  .footer-brand-col img.logo { margin-bottom: 20px; }
+  .footer-brand-col p {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 280px;
+    margin-bottom: 24px;
+  }
+  .footer-socials {
+    display: flex; gap: 12px;
+  }
+  .footer-socials a {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+    font-size: 16px;
+  }
+  .footer-socials a:hover { background: var(--pink); }
+  .footer-col h4 {
+    font-family: var(--font-display);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 12px; }
+  .footer-col a {
+    font-size: 14px;
+    color: var(--ink-soft);
+    transition: color .2s;
+  }
+  .footer-col a:hover { color: var(--pink); }
+  .footer-bottom {
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .footer-bottom .made {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .footer-bottom .made i {
+    color: var(--pink);
+    font-size: 13px;
+  }
+
+  /* ============================================
+     ON-LOAD ANIMATIONS
+     ============================================ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-eyebrow, .hero-headline, .hero-sub, .hero-cta-row, .hero-trust {
+    animation: fadeUp .8s ease backwards;
+  }
+  .hero-eyebrow { animation-delay: .1s; }
+  .hero-headline { animation-delay: .2s; }
+  .hero-sub { animation-delay: .35s; }
+  .hero-cta-row { animation-delay: .5s; }
+  .hero-trust { animation-delay: .65s; }
+
+  .hero-visual .photo {
+    animation: fadeUp 1s ease backwards;
+  }
+  .photo-1 { animation-delay: .4s; }
+  .photo-2 { animation-delay: .55s; }
+  .photo-3 { animation-delay: .7s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(-1deg); }
+  }
+  .hero-chip { animation: float 4s ease-in-out infinite, fadeUp 1s ease backwards .9s; }
+  .hero-chip.chip-2 { animation-delay: 1.05s, 1.05s; animation-duration: 5s, 1s; }
+  .hero-chip.chip-3 { animation-delay: 1.2s, 1.2s; animation-duration: 4.5s, 1s; }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="#" aria-label="Younite home">
+      <img src="younite-logo.png" alt="Younite" class="logo">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#stories">Stories</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="#" class="login">Log in</a>
+      <a href="#signup" class="btn btn-primary">Join Younite <span class="btn-arrow">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="container">
+    <!-- Big background swoosh (the brand's pink arrow motif, blown up) -->
+    <svg class="hero-swoosh" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 100 350 Q 300 100 500 350 T 600 600" stroke="#E91E8C" stroke-width="3" stroke-dasharray="6 8" fill="none" opacity="0.25"/>
+      <circle cx="120" cy="120" r="6" fill="#E91E8C" opacity="0.4"/>
+      <circle cx="580" cy="180" r="10" fill="#5B2ECC" opacity="0.3"/>
+      <circle cx="650" cy="500" r="8" fill="#E91E8C" opacity="0.3"/>
+    </svg>
+
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow">
+          <span class="dot"></span>
+          For international students in Australia
+        </div>
+        <h1 class="hero-headline">
+          Find your<br>
+          people. Feel<br>
+          <span class="accent">at home.</span>
+        </h1>
+        <p class="hero-sub">
+          Younite connects international students across Australia so no one has to navigate
+          a new country alone. Build real friendships through shared interests, languages,
+          and the everyday adventures of student life.
+        </p>
+        <div class="hero-cta-row">
+          <a href="#signup" class="btn btn-primary">Sign up for early access <span class="btn-arrow">→</span></a>
+          <a href="#how" class="btn btn-ghost">How it works</a>
+        </div>
+        <div class="hero-trust">
+          <div class="hero-trust-avatars">
+            <div class="avatar avatar-1"></div>
+            <div class="avatar avatar-2"></div>
+            <div class="avatar avatar-3"></div>
+            <div class="avatar avatar-4"></div>
+          </div>
+          <span>Joining 2,400+ students on the waitlist · Free forever to join</span>
+        </div>
+      </div>
+
+      <!-- HERO COLLAGE -->
+      <div class="hero-visual">
+        <div class="photo photo-3">
+          <div class="photo-inner"><span class="photo-inner-label"><i class="fi fi-rr-book-alt"></i> Study group · UniMelb</span></div>
+        </div>
+        <div class="photo photo-1">
+          <div class="photo-inner"><span class="photo-inner-label"><i class="fi fi-rr-mug-hot"></i> Coffee meetup · Carlton</span></div>
+        </div>
+        <div class="photo photo-2">
+          <div class="photo-inner"><span class="photo-inner-label"><i class="fi fi-rr-bowl-chopsticks"></i> Food crawl · Sydney</span></div>
+        </div>
+
+        <div class="hero-chip chip-1"><span class="icon"><i class="fi fi-rr-graduation-cap"></i></span> Verified students only</div>
+        <div class="hero-chip chip-2"><span class="icon"><i class="fi fi-rr-marker"></i></span> Melbourne · Sydney · Brisbane</div>
+        <div class="hero-chip chip-3"><span class="icon"><i class="fi fi-rr-comment-alt"></i></span> 12 new matches today</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STAT STORY (click-driven carousel: intro · stats · solution) ===== -->
+<section class="stat-story" aria-label="Why Younite exists">
+  <div class="stat-carousel" data-active="0">
+    <div class="stat-viewport">
+      <div class="stat-rail">
+
+        <!-- SLIDE 1 — Intro -->
+        <article class="stat-slide" data-slide="1">
+          <span class="stat-chapter">01 · The reality</span>
+          <div class="stat-slide-intro">
+            <h2 class="stat-slide-title">
+              You're not the only one<br>
+              <em>feeling this way.</em>
+            </h2>
+            <p class="stat-slide-sub">
+              Behind every international student arriving in Australia is a quiet question — <em>"will I find my people here?"</em>
+            </p>
+          </div>
+        </article>
+
+        <!-- SLIDE 2 — The 3 stats -->
+        <article class="stat-slide" data-slide="2">
+          <span class="stat-chapter">02 · The numbers</span>
+          <div class="stat-slide-grid">
+            <div class="stat-col">
+              <div class="stat-col-num">
+                <span class="num-digits" data-target="77" data-stagger="0">0</span><span class="num-suffix">%</span>
+              </div>
+              <h3 class="stat-col-headline">
+                of international students <em>felt lonely</em> in the past 12 months.
+              </h3>
+              <p class="stat-col-source">Insider Guides, 2024</p>
+            </div>
+            <div class="stat-col-divider"></div>
+            <div class="stat-col">
+              <div class="stat-col-num">
+                <span class="num-digits" data-target="787" data-stagger="300">0</span><span class="num-suffix">K+</span>
+              </div>
+              <h3 class="stat-col-headline">
+                international students enrolled in Australian universities — <em>all looking for community.</em>
+              </h3>
+              <p class="stat-col-source">EduConnect, 2025</p>
+            </div>
+            <div class="stat-col-divider"></div>
+            <div class="stat-col">
+              <div class="stat-col-num">
+                <span class="num-digits" data-target="80" data-stagger="600">0</span><span class="num-suffix">%</span>
+              </div>
+              <h3 class="stat-col-headline">
+                struggle with <em>mental health &amp; wellbeing</em> in their first year.
+              </h3>
+              <p class="stat-col-source">EduConnect, 2025</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- SLIDE 3 — Solution -->
+        <article class="stat-slide" data-slide="3">
+          <span class="stat-chapter">03 · Our answer</span>
+          <div class="stat-slide-outro">
+            <svg class="outro-arc" viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="40" cy="80" r="14" fill="#5B2ECC"/>
+              <circle cx="320" cy="80" r="14" fill="#E91E8C"/>
+              <path d="M 40 80 Q 180 -20 320 80" stroke="#E91E8C" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="6 8"/>
+              <path d="M 312 72 L 320 80 L 312 88" stroke="#E91E8C" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3 class="stat-slide-outro-title">
+              We're building Younite to <em>change that.</em>
+            </h3>
+            <p class="stat-slide-outro-sub">
+              A safe, student-only community where shared interests turn into shared dinners, study sessions, and lifelong friendships.
+            </p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- Prev / Next arrow controls (sit outside viewport in carousel gutters) -->
+    <button class="stat-arrow stat-arrow-prev" aria-label="Previous slide" type="button">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button class="stat-arrow stat-arrow-next" aria-label="Next slide" type="button">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+
+    <!-- Pagination dots -->
+    <div class="stat-dots" role="tablist" aria-label="Slide navigation">
+      <button class="stat-dot is-active" data-go="0" aria-label="Slide 1: The reality" type="button"></button>
+      <button class="stat-dot" data-go="1" aria-label="Slide 2: The numbers" type="button"></button>
+      <button class="stat-dot" data-go="2" aria-label="Slide 3: Our answer" type="button"></button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BENEFITS ===== -->
+<section id="features" class="padded">
+  <div class="container">
+    <div class="benefits-head">
+      <div>
+        <span class="section-eyebrow">What you get</span>
+        <h2 class="section-title">Built for students who <em>just landed.</em></h2>
+        <p class="section-sub">Everything you need to feel less alone — from your first week of orientation
+          to your last semester of finals.</p>
+      </div>
+      <div class="benefits-head-meta">
+        <strong>4 core features</strong>
+        Available in every Younite city
+      </div>
+    </div>
+
+    <div class="benefits-grid">
+      <!-- Featured/large card -->
+      <div class="benefit benefit-1">
+        <div class="benefit-icon"><i class="fi fi-rr-globe"></i></div>
+        <h3>Match by country, language &amp; interests</h3>
+        <p>Find people who get you. Filter by your home country, languages spoken,
+          your university, and what you actually like doing — from cricket to K-drama
+          to bouldering at 6am.</p>
+        <span class="benefit-tag">→ Smart matching</span>
+        <div class="benefit-decoration"></div>
+
+        <!-- Mini UI mockup inside the card -->
+        <div class="benefit-mockup">
+          <div class="row">
+            <div class="ava avatar-1"></div>
+            <div>
+              <strong>Mei, 22</strong>
+              <span>Beijing → Monash</span>
+            </div>
+            <span class="match-pct">94%</span>
+          </div>
+          <div class="row">
+            <div class="ava avatar-3"></div>
+            <div>
+              <strong>Sofia, 24</strong>
+              <span>São Paulo → RMIT</span>
+            </div>
+            <span class="match-pct">91%</span>
+          </div>
+          <div class="row">
+            <div class="ava avatar-2"></div>
+            <div>
+              <strong>Arjun, 19</strong>
+              <span>Mumbai → UNSW</span>
+            </div>
+            <span class="match-pct">88%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="benefit benefit-2">
+        <div class="benefit-icon"><i class="fi fi-rr-calendar-clock"></i></div>
+        <h3>Discover events near you</h3>
+        <p>Cultural meetups, study groups, language exchanges, weekend hikes —
+          all happening within walking distance of campus. RSVP in two taps.</p>
+        <span class="benefit-tag">→ Location-based</span>
+        <div class="benefit-decoration"></div>
+      </div>
+
+      <div class="benefit benefit-3">
+        <div class="benefit-icon"><i class="fi fi-rr-shield-check"></i></div>
+        <h3>Safe, student-only space</h3>
+        <p>Every account is verified with a university email. Moderated community.
+          No bots. No randoms. Just real students like you.</p>
+        <span class="benefit-tag">→ Verified profiles</span>
+        <div class="benefit-decoration"></div>
+      </div>
+
+      <div class="benefit benefit-4">
+        <div class="benefit-icon"><i class="fi fi-rr-plane-departure"></i></div>
+        <h3>Connect from day one</h3>
+        <p>Already accepted into an Australian uni? Start meeting your future
+          classmates and city-mates before your flight even takes off.</p>
+        <span class="benefit-tag">→ Pre-arrival mode</span>
+        <div class="benefit-decoration"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section id="how">
+  <div class="how">
+    <div class="how-inner">
+      <div class="how-head">
+        <div>
+          <span class="section-eyebrow">How it works</span>
+          <h2 class="section-title">Three steps. <em>One community.</em></h2>
+        </div>
+        <p class="section-sub">No endless setup. You're chatting with new friends within minutes of signing up.</p>
+      </div>
+
+      <div class="how-steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Sign up with your<br>uni email</h3>
+          <p>Verified in seconds. Younite is student-only — every member is a real student at a real Australian university.</p>
+          <svg class="step-arrow" width="60" height="40" viewBox="0 0 60 40" fill="none">
+            <path d="M5 20 Q 30 5 55 20" stroke="#E91E8C" stroke-width="2" stroke-dasharray="4 4" fill="none"/>
+            <path d="M50 15 L55 20 L50 25" stroke="#E91E8C" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>Tell us about<br>yourself</h3>
+          <p>Country, languages, interests, what you study. The more you share, the better your matches.</p>
+          <svg class="step-arrow" width="60" height="40" viewBox="0 0 60 40" fill="none">
+            <path d="M5 20 Q 30 35 55 20" stroke="#E91E8C" stroke-width="2" stroke-dasharray="4 4" fill="none"/>
+            <path d="M50 15 L55 20 L50 25" stroke="#E91E8C" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Match, chat,<br>meet up</h3>
+          <p>Connect 1-on-1, join group events, or host your own. Friendships start in the app and continue in real life.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section id="stories" class="padded">
+  <div class="container">
+    <div class="testimonials-head">
+      <span class="section-eyebrow">Stories</span>
+      <h2 class="section-title">Real students. <em>Real friendships.</em></h2>
+      <p class="section-sub">From homesick freshers to confident locals — here's what early users are saying.</p>
+    </div>
+
+    <div class="testimonials">
+      <div class="testimonial">
+        <div class="testimonial-quote">"</div>
+        <p class="testimonial-text">I was eating dinner alone every night for two months. Through Younite I found three other Chinese students in my building — now we cook together every Sunday.</p>
+        <div class="testimonial-meta">
+          <div class="testimonial-avatar avatar-1"></div>
+          <div>
+            <strong>Mei Lin</strong>
+            <span>22 · Master of IT, Monash</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="testimonial-quote">"</div>
+        <p class="testimonial-text">The cultural events feature got me to my first cricket meetup in Sydney. Made five mates in one afternoon. Younite genuinely changed my semester.</p>
+        <div class="testimonial-meta">
+          <div class="testimonial-avatar avatar-2"></div>
+          <div>
+            <strong>Arjun Patel</strong>
+            <span>19 · Engineering, UNSW</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="testimonial-quote">"</div>
+        <p class="testimonial-text">Younite matched me with a language exchange partner. My English improved so much, and honestly? I made a real friend. That's worth everything.</p>
+        <div class="testimonial-meta">
+          <div class="testimonial-avatar avatar-3"></div>
+          <div>
+            <strong>Sofia Almeida</strong>
+            <span>24 · Marketing, RMIT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="logo-bar">
+      <div class="logo-bar-label">As seen / partnered with</div>
+      <div class="logo-bar-items">
+        <span class="logo-placeholder">Study Australia</span>
+        <span class="logo-placeholder">Insider Guides</span>
+        <span class="logo-placeholder">RMIT Union</span>
+        <span class="logo-placeholder">Monash ISA</span>
+        <span class="logo-placeholder">UniMelb Global</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section id="signup">
+  <div class="final-cta">
+    <div class="final-cta-inner">
+      <span class="section-eyebrow" style="color: #FFA8D6;">Be the first</span>
+      <h2>Be the first to <em>connect</em><br>when we launch.</h2>
+      <p>We're launching at three Melbourne universities first, then rolling out across Australia. Get on the waitlist and you'll be among the first 1,000 to join — free forever.</p>
+      <form class="signup-form" onsubmit="event.preventDefault();">
+        <input type="email" placeholder="your.name@university.edu.au" required>
+        <button type="submit" class="btn btn-primary">Get early access <span class="btn-arrow">→</span></button>
+      </form>
+      <div class="final-cta-foot">
+        <span><i class="fi fi-rr-check"></i> Free to join</span>
+        <span><i class="fi fi-rr-check"></i> Built by students, for students</span>
+        <span><i class="fi fi-rr-check"></i> Made in Melbourne</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand-col">
+        <img src="younite-logo.png" alt="Younite" class="logo">
+        <p>The community platform for international students in Australia. Built with care by Team CRTL+PASS.</p>
+        <div class="footer-socials">
+          <a href="#" aria-label="Instagram"><i class="fi fi-brands-instagram"></i></a>
+          <a href="#" aria-label="TikTok"><i class="fi fi-brands-tik-tok"></i></a>
+          <a href="#" aria-label="X"><i class="fi fi-brands-twitter"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">How it works</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Premium</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Team</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Student guides</a></li>
+          <li><a href="#">University partners</a></li>
+          <li><a href="#">Help center</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Cookies</a></li>
+          <li><a href="#">Safety</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Younite · Team CRTL+PASS · Deakin University SIT726</span>
+      <span class="made">Made with <i class="fi fi-sr-heart"></i> in Melbourne</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== Scroll experience: Lenis smooth-scroll + reveal-on-scroll ===== -->
+<script>
+(function() {
+  // Honour user preference: skip all of this if reduced motion is requested.
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ----------------------------------------------------------------
+     PART 1 — Reveal-on-scroll using IntersectionObserver
+     Tags the curated list of selectors below with .reveal, then observes
+     them. When 15% of an element is in view, it fades up.
+     ---------------------------------------------------------------- */
+  const REVEAL_SELECTORS = [
+    // Section-level anchors
+    '.stat-story',
+    '#features .benefits-head',
+    // Each benefit card individually so they can stagger
+    '.benefits-grid > .benefit',
+    // How-it-works
+    '#how .how-head',
+    '.how-steps > .step',
+    // Testimonials
+    '.testimonials-head',
+    '.testimonials > .testimonial',
+    '.logo-bar',
+    // Final CTA + footer
+    '.final-cta',
+    '.footer-grid',
+    '.footer-bottom'
+  ];
+
+  const targets = [];
+  REVEAL_SELECTORS.forEach(sel => {
+    document.querySelectorAll(sel).forEach(el => {
+      el.classList.add('reveal');
+      targets.push(el);
+    });
+  });
+
+  // Stagger sibling cards: benefits, steps, testimonials get cascading delay
+  document.querySelectorAll('.benefits-grid').forEach(g => g.classList.add('reveal-stagger'));
+  document.querySelectorAll('.how-steps').forEach(g => g.classList.add('reveal-stagger'));
+  document.querySelectorAll('.testimonials').forEach(g => g.classList.add('reveal-stagger'));
+
+  if (prefersReduced) {
+    // Reduced motion: just show everything immediately, no observer needed.
+    targets.forEach(el => el.classList.add('is-visible'));
+  } else if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);    // one-shot reveal, never reverse
+        }
+      });
+    }, {
+      threshold: 0.15,                   // trigger at 15% visible
+      rootMargin: '0px 0px -40px 0px'    // delay until ~40px into viewport
+    });
+    targets.forEach(el => io.observe(el));
+  } else {
+    // Old browser fallback: just show everything.
+    targets.forEach(el => el.classList.add('is-visible'));
+  }
+
+  /* ----------------------------------------------------------------
+     PART 2 — Lenis smooth-scroll
+     Loaded lazily from CDN. Only activates if user is OK with motion.
+     Smooths wheel/trackpad input — does NOT scroll-jack.
+     ---------------------------------------------------------------- */
+  if (prefersReduced) return;
+
+  // Load Lenis CSS first (handles the .lenis class behavior on html/body)
+  const lenisCss = document.createElement('link');
+  lenisCss.rel = 'stylesheet';
+  lenisCss.href = 'https://unpkg.com/lenis@1.3.23/dist/lenis.css';
+  document.head.appendChild(lenisCss);
+
+  const lenisScript = document.createElement('script');
+  lenisScript.src = 'https://unpkg.com/lenis@1.3.23/dist/lenis.min.js';
+  lenisScript.onload = function() {
+    if (typeof Lenis === 'undefined') return;
+
+    const lenis = new Lenis({
+      autoRaf: true,                     // Lenis runs its own RAF loop
+      duration: 1.1,                     // gentle easing duration
+      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // expoOut
+      lerp: 0.1,                         // linear interpolation factor
+      wheelMultiplier: 1.0,
+      smoothWheel: true,
+      autoToggle: true,                  // pauses on body scroll-locked, etc.
+      anchors: true                      // smooth-scrolls in-page #anchor links automatically
+    });
+
+    // Expose globally in case other code wants to coordinate (carousel doesn't, but future-proof)
+    window.__lenis = lenis;
+  };
+  // If CDN fails (offline, blocked), the page falls back to native scroll silently.
+  lenisScript.onerror = () => { /* no-op — graceful fallback to native scroll */ };
+  document.head.appendChild(lenisScript);
+})();
+</script>
+
+<!-- ===== STAT STORY carousel ===== -->
+<script>
+(function() {
+  const carousel = document.querySelector('.stat-carousel');
+  if (!carousel) return;
+
+  const prevBtn = carousel.querySelector('.stat-arrow-prev');
+  const nextBtn = carousel.querySelector('.stat-arrow-next');
+  const dots    = Array.from(carousel.querySelectorAll('.stat-dot'));
+  const numberEls = Array.from(carousel.querySelectorAll('.num-digits'));
+  const SLIDE_COUNT = 3;
+  const STATS_SLIDE_INDEX = 1;  // slide 2 (zero-indexed)
+
+  let active = 0;
+  const counted = new WeakSet();
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+
+  function countUp(el) {
+    if (counted.has(el)) return;
+    counted.add(el);
+    const target   = parseInt(el.dataset.target, 10) || 0;
+    const stagger  = parseInt(el.dataset.stagger, 10) || 0;
+    const duration = 1400;
+    setTimeout(() => {
+      const start = performance.now();
+      (function tick(now) {
+        const t = Math.min(1, (now - start) / duration);
+        el.textContent = Math.round(target * easeOutCubic(t));
+        if (t < 1) requestAnimationFrame(tick);
+      })(performance.now());
+    }, stagger);
+  }
+
+  function goTo(index) {
+    active = Math.max(0, Math.min(SLIDE_COUNT - 1, index));
+    carousel.dataset.active = String(active);
+
+    // Update dots
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === active));
+
+    // Update arrow disabled state
+    prevBtn.disabled = (active === 0);
+    nextBtn.disabled = (active === SLIDE_COUNT - 1);
+
+    // Trigger staggered count-up when stats slide becomes active
+    if (active === STATS_SLIDE_INDEX) {
+      numberEls.forEach(countUp);
+    }
+  }
+
+  // Wire up clicks
+  prevBtn.addEventListener('click', () => goTo(active - 1));
+  nextBtn.addEventListener('click', () => goTo(active + 1));
+  dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+
+  // Keyboard support: ←  → arrows when carousel has focus
+  carousel.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft')       { e.preventDefault(); goTo(active - 1); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); goTo(active + 1); }
+  });
+
+  // Initial state
+  goTo(0);
+})();
+</script>
+
+</body>
+</html>
